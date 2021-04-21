@@ -16,12 +16,29 @@ const productSchema = {
     type: Number,
     required: true,
   },
+  qty: {
+    type: Number,
+    default: 0,
+  },
+  categories: {
+    type: [String],
+    default: "clothing",
+  },
+  size: {
+    type: String,
+    required: true,
+    uppercase: true,
+    enum: ["XS", "S", "M", "L", "XL"],
+  },
 };
 
 const Product = mongoose.model("Product", productSchema);
 
-const coat = new Product({ name: "Peacoat", price: 149.95 });
-coat
-  .save()
-  .then((data) => console.log(data))
-  .catch((err) => console.log(err));
+const blackTShirt = new Product({
+  name: "Black T-shirt",
+  price: 6.99,
+  qty: 5,
+  categories: ["upperwear"],
+  size: "l",
+});
+blackTShirt.save();
