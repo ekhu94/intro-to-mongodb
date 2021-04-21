@@ -37,6 +37,10 @@ const productSchema = new mongoose.Schema({
   },
 });
 
+productSchema.statics.fireSale = function () {
+  return this.updateMany({}, { onSale: true, price: 3.99 });
+};
+
 productSchema.methods.addSale = function () {
   this.onSale = true;
   this.price = this.price * 0.8;
@@ -65,7 +69,7 @@ const takeOffSale = async (name) => {
   console.log(product);
 };
 
-takeOffSale("Black T-shirt");
+Product.fireSale().then((res) => console.log(res));
 
 // Product.insertMany([
 //   {
