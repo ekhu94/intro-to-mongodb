@@ -18,4 +18,14 @@ personSchema.virtual("fullName").set(function (val) {
   this.last = val.split(" ")[1];
 });
 
+personSchema.pre("save", function () {
+  this.first = "KIRYU";
+  this.last = "CHAAANNNN";
+  console.log("Before save...");
+});
+
+personSchema.post("save", function () {
+  console.log("After save!");
+});
+
 const Person = mongoose.model("Person", personSchema);
