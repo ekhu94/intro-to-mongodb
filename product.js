@@ -7,7 +7,7 @@ mongoose
   .then((data) => console.log("Connection Open"))
   .catch((err) => console.log(err));
 
-const productSchema = {
+const productSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -23,6 +23,7 @@ const productSchema = {
   categories: {
     type: [String],
     default: "clothing",
+    lowercase: true,
   },
   size: {
     type: String,
@@ -34,34 +35,80 @@ const productSchema = {
     type: Boolean,
     default: false,
   },
-};
+});
 
-const Product = mongoose.model("Product", productSchema);
-
-productSchema.methods.addOnSale = function () {
-  this.onSale = !this.onSale;
+productSchema.methods.addSale = function () {
+  this.onSale = true;
   this.price = this.price * 0.8;
   return this.save();
 };
 
-const saleItem = async (productName) => {
-  try {
-    const product = Product.findOne({ name: productName });
-    console.log(product);
-    await product.addOnSale();
-    console.log(product);
-  } catch (e) {
-    console.log(e);
-  }
+productSchema.methods.removeSale = function () {
+  this.onSale = false;
+  this.price = this.price * 1.2;
+  return this.save();
 };
 
-saleItem("Black T-shirt");
+const Product = mongoose.model("Product", productSchema);
 
-// const blackTShirt = new Product({
-//   name: "Black T-shirt",
-//   price: 6.99,
-//   qty: 5,
-//   categories: ["upperwear"],
-//   size: "l",
-// });
-// blackTShirt.save();
+const putOnSale = async (name) => {
+  const product = await Product.findOne({ name: name });
+  console.log(product);
+  await product.addSale();
+  console.log(product);
+};
+
+const takeOffSale = async (name) => {
+  const product = await Product.findOne({ name: name });
+  console.log(product);
+  await product.removeSale();
+  console.log(product);
+};
+
+takeOffSale("Black T-shirt");
+
+// Product.insertMany([
+//   {
+//     name: "Black T-shirt",
+//     price: 6.99,
+//     qty: 10,
+//     categories: ["clothing", "short-sleeves"],
+//     size: "S",
+//     onSale: false,
+//   },
+//   {
+//     name: "Red T-shirt",
+//     price: 5.99,
+//     qty: 6,
+//     categories: ["clothing", "short-sleeves"],
+//     size: "m",
+//     onSale: false,
+//   },
+//   {
+//     name: "Brown Peacoat",
+//     price: 159.5,
+//     qty: 2,
+//     categories: ["clothing", "outerwear"],
+//     size: "L",
+//     onSale: false,
+//   },
+//   {
+//     name: "Denim Pants",
+//     price: 39.95,
+//     qty: 8,
+//     categories: ["clothing", "lowerwear"],
+//     size: "M",
+//     onSale: false,
+//   },
+// ]);
+
+// const saleItem = async (productName) => {
+//   try {
+//     const product = Product.findOne({ name: productName });
+//     console.log(product);
+//     await product.addOnSale();
+//     console.log(product);
+//   } catch (e) {
+//     console.log(e);
+//   }
+// };
