@@ -30,15 +30,38 @@ const productSchema = {
     uppercase: true,
     enum: ["XS", "S", "M", "L", "XL"],
   },
+  onSale: {
+    type: Boolean,
+    default: false,
+  },
 };
 
 const Product = mongoose.model("Product", productSchema);
 
-const blackTShirt = new Product({
-  name: "Black T-shirt",
-  price: 6.99,
-  qty: 5,
-  categories: ["upperwear"],
-  size: "l",
-});
-blackTShirt.save();
+productSchema.methods.addOnSale = function () {
+  this.onSale = !this.onSale;
+  this.price = this.price * 0.8;
+  return this.save();
+};
+
+const saleItem = async (productName) => {
+  try {
+    const product = Product.findOne({ name: productName });
+    console.log(product);
+    await product.addOnSale();
+    console.log(product);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+saleItem("Black T-shirt");
+
+// const blackTShirt = new Product({
+//   name: "Black T-shirt",
+//   price: 6.99,
+//   qty: 5,
+//   categories: ["upperwear"],
+//   size: "l",
+// });
+// blackTShirt.save();
